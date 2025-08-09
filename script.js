@@ -68,7 +68,8 @@ const translations = {
 "game19_slug": "engelden-kacis",  // ID'si 19 olan 18. oyun
 
         "terms_link": "Hizmet Koşulları",
-        "privacy_link": "Gizlilik Politikası"
+        "privacy_link": "Gizlilik Politikası",
+        "game3_color_names": ["Kırmızı", "Mavi", "Yeşil", "Sarı", "Mor", "Turuncu"]
     
                
     
@@ -124,8 +125,8 @@ const translations = {
 "game19_slug": "dodge",
 
             "terms_link": "Terms of Service",
-            "privacy_link": "Privacy Policy"
-            
+            "privacy_link": "Privacy Policy",
+            "game3_color_names": ["Red", "Blue", "Green", "Yellow", "Purple", "Orange"]
 
 
 
@@ -458,7 +459,112 @@ document.addEventListener('DOMContentLoaded', () => {
                     leaderboardManager.checkAndPromptForScore('game2', this.score, this.card, this.resetBtn);
                 } 
             } },
-            { cardId: 'game3', logic: { init() { this.bindElements(); this.setupInitialState(); this.startBtn.addEventListener('click', () => this.start()); this.resetBtn.addEventListener('click', () => this.reset()); }, bindElements() {this.card = document.getElementById('card-game3'); this.startBtn=this.card.querySelector("#game3-start");this.resetBtn=this.card.querySelector("#game3-reset");this.area=this.card.querySelector("#game3-area");this.message=this.card.querySelector("#game3-message");this.scoreEl=this.card.querySelector("#game3-score");this.targetColorNameEl=this.card.querySelector("#game3-target-color-name");this.targetTextEl=this.card.querySelector("#game3-target-text"); this.timerEl = this.card.querySelector("#game3-timer");}, colors: { 'Kırmızı': '#d32f2f', 'Mavi': '#1976d2', 'Yeşil': '#388e3c', 'Sarı': '#fbc02d', 'Mor': '#7b1fa2', 'Turuncu': '#f57c00' }, setupInitialState() { clearInterval(this.timerInterval); this.score = 0; this.scoreEl.textContent = 0; this.timeLeft = 30; this.timerEl.textContent = this.timeLeft; this.message.textContent = ''; this.area.innerHTML = ''; this.targetColorNameEl.textContent = "?"; this.area.style.pointerEvents = 'none'; leaderboardManager.clearLeaderboard(this.card, this.resetBtn); }, start() { show(this.resetBtn); hide(this.startBtn); this.area.style.pointerEvents = 'auto'; this.nextRound(); this.timerInterval = setInterval(() => { this.timeLeft--; this.timerEl.textContent = this.timeLeft; if (this.timeLeft <= 0) { this.endGame(false); } }, 1000); }, reset() { hide(this.resetBtn); show(this.startBtn); this.setupInitialState(); }, nextRound() { this.area.innerHTML = ''; const n = Object.keys(this.colors); const a = [...n].sort(() => 0.5 - Math.random()); const g = a.slice(0, 4); this.targetColor = g[Math.floor(Math.random() * 4)]; this.targetColorNameEl.textContent = this.targetColor; this.targetTextEl.style.color = this.colors[a[4]]; g.sort(() => 0.5 - Math.random()).forEach(c => { const b = document.createElement('div'); b.className = 'color-box'; b.style.backgroundColor = this.colors[c]; b.dataset.color = c; b.onclick = (e) => this.check(e); this.area.appendChild(b); }); }, check(e) { sounds.sound4.play(); if (e.target.dataset.color === this.targetColor) { this.score++; this.scoreEl.textContent = this.score; this.nextRound(); } else { this.endGame(true); } }, endGame(isWrongClick) { clearInterval(this.timerInterval); this.area.style.pointerEvents = 'none'; const lang = document.documentElement.lang; if (isWrongClick) { this.message.textContent = `${translations[lang].game3_msg_wrong} ${this.score}`; } else { this.message.textContent = `${translations[lang].game3_msg_timeout} ${this.score}`; } this.message.className = 'message lose'; leaderboardManager.checkAndPromptForScore('game3', this.score, this.card, this.resetBtn); } } },
+                        // OYUN 3: RENK AVI (ÇEVİRİ ENTEGRASYONU TAMAMLANDI)
+            { cardId: 'game3', logic: {
+                init() {
+                    this.bindElements();
+                    this.setupInitialState();
+                    this.startBtn.addEventListener('click', () => this.start());
+                    this.resetBtn.addEventListener('click', () => this.reset());
+                },
+                bindElements() {
+                    this.card = document.getElementById('card-game3');
+                    this.startBtn = this.card.querySelector("#game3-start");
+                    this.resetBtn = this.card.querySelector("#game3-reset");
+                    this.area = this.card.querySelector("#game3-area");
+                    this.message = this.card.querySelector("#game3-message");
+                    this.scoreEl = this.card.querySelector("#game3-score");
+                    this.targetColorNameEl = this.card.querySelector("#game3-target-color-name");
+                    this.targetTextEl = this.card.querySelector("#game3-target-text");
+                    this.timerEl = this.card.querySelector("#game3-timer");
+                },
+                // Sabit renk kodları, sıralaması translations'daki isimlerle aynı olmalı
+                colorHexValues: ['#d32f2f', '#1976d2', '#388e3c', '#fbc02d', '#7b1fa2', '#f57c00'],
+                
+                setupInitialState() {
+                    clearInterval(this.timerInterval);
+                    this.score = 0;
+                    this.scoreEl.textContent = 0;
+                    this.timeLeft = 30;
+                    this.timerEl.textContent = this.timeLeft;
+                    this.message.textContent = '';
+                    this.area.innerHTML = '';
+                    this.targetColorNameEl.textContent = "?";
+                    this.area.style.pointerEvents = 'none';
+                    leaderboardManager.clearLeaderboard(this.card, this.resetBtn);
+                },
+                start() {
+                    show(this.resetBtn);
+                    hide(this.startBtn);
+                    this.area.style.pointerEvents = 'auto';
+                    this.nextRound();
+                    this.timerInterval = setInterval(() => {
+                        this.timeLeft--;
+                        this.timerEl.textContent = this.timeLeft;
+                        if (this.timeLeft <= 0) {
+                            this.endGame(false);
+                        }
+                    }, 1000);
+                },
+                reset() {
+                    hide(this.resetBtn);
+                    show(this.startBtn);
+                    this.setupInitialState();
+                },
+                nextRound() {
+                    this.area.innerHTML = '';
+                    const lang = document.documentElement.lang;
+                    const currentLangColorNames = translations[lang].game3_color_names;
+                    
+                    // Renk isimleri ve hex kodlarını birleştirerek bir sözlük oluştur
+                    const colorMap = Object.fromEntries(currentLangColorNames.map((name, i) => [name, this.colorHexValues[i]]));
+
+                    // Mevcut tüm renk isimlerini karıştır
+                    const shuffledColorNames = [...currentLangColorNames].sort(() => 0.5 - Math.random());
+                    
+                    // Ekranda gösterilecek 4 rengi ve hedef rengi seç
+                    const displayColorNames = shuffledColorNames.slice(0, 4);
+                    this.targetColorName = displayColorNames[Math.floor(Math.random() * 4)];
+                    
+                    // Hedef metninin rengi, ekranda gösterilmeyen bir renk olsun (şaşırtma amaçlı)
+                    const confusingColorName = shuffledColorNames[4];
+                    
+                    this.targetColorNameEl.textContent = this.targetColorName;
+                    this.targetTextEl.style.color = colorMap[confusingColorName];
+                    
+                    // Butonları karıştırıp ekrana yerleştir
+                    displayColorNames.sort(() => 0.5 - Math.random()).forEach(colorName => {
+                        const box = document.createElement('div');
+                        box.className = 'color-box';
+                        box.style.backgroundColor = colorMap[colorName];
+                        box.dataset.colorName = colorName;
+                        box.onclick = (e) => this.check(e);
+                        this.area.appendChild(box);
+                    });
+                },
+                check(e) {
+                    sounds.sound4.play();
+                    if (e.target.dataset.colorName === this.targetColorName) {
+                        this.score++;
+                        this.scoreEl.textContent = this.score;
+                        this.nextRound();
+                    } else {
+                        this.endGame(true);
+                    }
+                },
+                endGame(isWrongClick) {
+                    clearInterval(this.timerInterval);
+                    this.area.style.pointerEvents = 'none';
+                    const lang = document.documentElement.lang;
+                    if (isWrongClick) {
+                        this.message.textContent = `${translations[lang].game3_msg_wrong} ${this.score}`;
+                    } else {
+                        this.message.textContent = `${translations[lang].game3_msg_timeout} ${this.score}`;
+                    }
+                    this.message.className = 'message lose';
+                    leaderboardManager.checkAndPromptForScore('game3', this.score, this.card, this.resetBtn);
+                }
+            } },
 
                         // OYUN 4: HIZLI TIKLAMA (CPS) (ÇEVİRİ HATASI GİDERİLDİ)
             { cardId: 'game4', logic: {
