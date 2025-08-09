@@ -1140,9 +1140,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 addMouseListeners() { this.boardEl.requestPointerLock(); this.boundMouseMove = (e) => this.movePlayer(e); document.addEventListener('mousemove', this.boundMouseMove); this.boundTouchMove = (e) => this.movePlayer(e, 'touch'); this.boardEl.addEventListener('touchmove', this.boundTouchMove, { passive: false }); },
                 removeMouseListeners() { if(document.pointerLockElement === this.boardEl) document.exitPointerLock(); document.removeEventListener('mousemove', this.boundMouseMove); this.boardEl.removeEventListener('touchmove', this.boundTouchMove); },
                 movePlayer(e, type) {
-                    e.preventDefault(); // Sayfanın kaymasını engelle
-                    const boardRect = this.boardEl.getBoundingClientRect();
+                    e.preventDefault();
+                    
                     let newY;
+                    const boardRect = this.boardEl.getBoundingClientRect(); // Sadece mouse/touch pozisyonu için
 
                     if (type === 'touch') {
                         // Dokunmatik hareketi
@@ -1154,7 +1155,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     
                     const playerHeight = this.playerEl.offsetHeight;
-                    this.playerEl.style.top = Math.max(0, Math.min(boardRect.height - playerHeight, newY)) + 'px';
+                    // <<< DÜZELTME BURADA >>>
+                    // boardRect.height yerine, scale'den etkilenmeyen this.boardEl.offsetHeight kullanıyoruz.
+                    const boardHeight = this.boardEl.offsetHeight;
+                    
+                    this.playerEl.style.top = Math.max(0, Math.min(boardHeight - playerHeight, newY)) + 'px';
                 },
                 gameLoop() { this.score++; this.scoreEl.textContent = this.score; if(this.score % 50 === 0) { this.spawnObstacle(); } this.moveObstacles(); if(this.checkCollision()) { this.endGame(); return; } this.gameLoopId = requestAnimationFrame(this.gameLoop.bind(this)); },
                 spawnObstacle() { const obstacle = document.createElement('div'); obstacle.className = 'obstacle'; const height = Math.random() * 40 + 20; const isTop = Math.random() > 0.5; obstacle.style.height = height + '%'; obstacle.style.left = this.boardEl.offsetWidth + 'px'; if(isTop) { obstacle.style.top = '0'; } else { obstacle.style.bottom = '0'; } this.boardEl.appendChild(obstacle); this.obstacles.push(obstacle); },
